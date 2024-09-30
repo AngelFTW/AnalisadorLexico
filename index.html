@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Léxico</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+  <h1>Léxico</h1>
+
+  <textarea id="input" placeholder="Digite o código aqui"></textarea>
+
+  <table id="tokens-table">
+    <thead>
+      <tr>
+        <th class="centralizarTexto">Token</th>
+        <th class="centralizarTexto">Classificação</th>
+        <th class="centralizarTexto">Linha</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+  <script>
+    var input = document.getElementById('input');
+    var tabela = document.getElementById('tokens-table').getElementsByTagName('tbody')[0];
+
+    input.addEventListener('input', separarTokens);
+
+    function separarTokens() {
+      var inputVal = input.value;
+      var tokens = [];
+      var linhas = inputVal.split('\n');
+      
+      tabela.innerHTML = '';
+
+      linhas.forEach((linha, index) => {
+        var tokensLinhas = linha.match(/[\w]+|[^\w\s]/g);
+        if (tokensLinhas) {
+          tokensLinhas.forEach(token => {
+            tokens.push({
+              token: token,
+              classificacao: classificarTokens(token),
+              linha: index + 1
+            });
+          });
+        }
+      });
+
+      tokens.forEach(token => {
+        var row = tabela.insertRow();
+        var columnToken = row.insertCell(0);
+        var columnClassificacao = row.insertCell(1);
+        var columnLinha = row.insertCell(2);
+
+        columnToken.textContent = token.token;
+        columnClassificacao.textContent = token.classificacao;
+        columnLinha.textContent = token.linha;
+      });
+    }
+
+    function classificarTokens(token) {
+      if (['let', 'const', 'var', 'real', 'begin', 'end', 'function', 'class', 'interface', 'enum', 'program', 'integer'].includes(token)) {
+        return 'Palavra Reservada';
+      } else if (['+', '-', '*', '/', '%'].includes(token)) {
+        return 'Operador';
+      } else if (['==', '===', '!=', '!==', '>', '<', '>=', '<='].includes(token)) {
+        return 'Comparação';
+      } else if (['='].includes(token)) {
+        return 'Atribuição';
+      } else if ([';', ':', ',', '.'].includes(token)) {
+        return 'Delimitador';
+      } else if (token.match(/^[a-zA-Z_$][a-zA-Z_$0-9]*$/)) {
+        return 'Identificador';
+      } else if (token.match(/^[0-9]+$/)) {
+        return 'Numero Inteiro';
+      } else {
+        return 'String';
+      }
+    }
+  </script>
+
+</body>
+</html>
